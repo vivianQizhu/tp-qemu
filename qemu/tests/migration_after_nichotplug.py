@@ -100,6 +100,9 @@ def run(test, params, env):
         nic_mac = nic_info['mac']
         vm.params['nics'] += " %s" % nic_name
         vm.params['nic_model_%s' % nic_name] = nic_info['nic_model']
+        if params.get("pcie_extra_root_port"):
+            devs = vm.devices.get_by_params({"id": nic_info['device_id']})
+            vm.params['nic_pci_bus_%s' % nic_name] = devs[0]["bus"]
 
         # Only run dhclient if explicitly set and guest is not running Windows.
         # Most modern Linux guests run NetworkManager, and thus do not need this.
