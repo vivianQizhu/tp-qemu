@@ -2,6 +2,7 @@ import time
 
 from virttest import error_context
 from virttest import utils_misc
+from virttest.utils_windows import wmic
 
 from provider import win_driver_utils
 
@@ -88,5 +89,9 @@ def run(test, params, env):
         test.fail(fail_log)
     elif "TRUE" not in chk_output:
         test.error("Device %s is not found in guest" % device_name)
+    cmd = wmic.make_query("path win32_pnpsigneddriver",
+                          "DeviceName like '%s'" % device_name,
+                          props=["DriverVersion"], get_swch=wmic.FMT_TYPE_LIST)
+    test.log.info(wmic.parse_list(session.cmd(cmd, timeout=120)))
 
     session.close()
